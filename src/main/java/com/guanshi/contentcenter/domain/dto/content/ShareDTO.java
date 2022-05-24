@@ -1,31 +1,31 @@
-package com.guanshi.contentcenter.domain.entity.content;
+package com.guanshi.contentcenter.domain.dto.content;
 
+import lombok.*;
+
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.util.Date;
-import javax.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
 
 /**
  * 表名：share
  * 表注释：分享表
 */
-@Getter
-@Setter
-@ToString
-@Table(name = "share")
-public class Share {
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Builder
+
+public class ShareDTO {
     /**
      * id
      */
-    @Id
-    @GeneratedValue(generator = "JDBC")
     private Integer id;
 
     /**
      * 发布人id
      */
-    @Column(name = "user_id")
     private Integer userId;
 
     /**
@@ -36,19 +36,16 @@ public class Share {
     /**
      * 创建时间
      */
-    @Column(name = "create_time")
     private Date createTime;
 
     /**
      * 修改时间
      */
-    @Column(name = "update_time")
     private Date updateTime;
 
     /**
      * 是否原创 0:否 1:是
      */
-    @Column(name = "is_original")
     private Boolean isOriginal;
 
     /**
@@ -74,29 +71,28 @@ public class Share {
     /**
      * 下载地址
      */
-    @Column(name = "download_url")
     private String downloadUrl;
 
     /**
      * 下载数 
      */
-    @Column(name = "buy_count")
     private Integer buyCount;
 
     /**
      * 是否显示 0:否 1:是
      */
-    @Column(name = "show_flag")
     private Boolean showFlag;
 
     /**
      * 审核状态 NOT_YET: 待审核 PASSED:审核通过 REJECTED:审核不通过
      */
-    @Column(name = "audit_status")
     private String auditStatus;
 
     /**
      * 审核不通过原因
      */
     private String reason;
+
+    private String wxNickname;
+
 }

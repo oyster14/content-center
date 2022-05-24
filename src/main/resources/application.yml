@@ -1,1 +1,31 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/content_center?serverTimezone=UTC
+    hikari:
+      username: root
+      password: root
+      driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+#        namespace: 948ea1d8-4d45-46c0-85ba-0bd09d4244c3
+        cluster-name: BJ
+  application:
+    name: content-center
+server:
+  port: 8010
+
+ribbon:
+  eager-load:
+    enabled: true
+    clients: user-center
+#user-center:
+#  ribbon:
+#    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+logging:
+  level:
+    com.guanshi.contentcenter.feignclient.UserCenterFeignClient: debug
+
+
 
