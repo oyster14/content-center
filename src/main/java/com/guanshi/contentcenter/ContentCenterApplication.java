@@ -1,6 +1,7 @@
 package com.guanshi.contentcenter;
 
 
+import com.guanshi.contentcenter.configuration.GlobalFeignConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -13,7 +14,7 @@ import tk.mybatis.spring.annotation.MapperScan;
 @MapperScan(basePackages = "com.guanshi")
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients
+@EnableFeignClients//(defaultConfiguration = GlobalFeignConfiguration.class)
 public class ContentCenterApplication {
 
     public static void main(String[] args) {
