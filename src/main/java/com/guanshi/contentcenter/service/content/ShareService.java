@@ -1,6 +1,7 @@
 package com.guanshi.contentcenter.service.content;
 
 import com.guanshi.contentcenter.dao.content.ShareMapper;
+import com.guanshi.contentcenter.domain.dto.content.ShareAuditDTO;
 import com.guanshi.contentcenter.domain.dto.content.ShareDTO;
 import com.guanshi.contentcenter.domain.dto.user.UserDTO;
 import com.guanshi.contentcenter.domain.entity.content.Share;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -56,6 +58,25 @@ public class ShareService {
         shareDTO.setWxNickname(userDTO.getWxNickname());
 
         return shareDTO;
+
+    }
+
+    public Share auditById(Integer id, ShareAuditDTO auditDTO) {
+//        1. 查询share是否存在，不存在或者当前状态!=NOT_YET 抛异常
+        Share share = this.shareMapper.selectByPrimaryKey(id);
+        if (share == null) {
+            throw new IllegalArgumentException("参数非法，这个分享不存在");
+        }
+        if (!Objects.equals("NOT_YET", share.getAuditStatus())) {
+            throw new IllegalArgumentException("参数非法，这个分享已经审核通过或者审核不通过");
+        }
+//        2. 审核资源，将状态设置为PASS/REJECT
+        share.setAuditStatus(auditDTO.getAuditStatusEnum().toString());
+        this.shareMapper.updateByPrimaryKey(share);
+//        3. 如果是PASS添加积分
+//        同步执行
+//        userCenterFeignClient.addBonus(id, 500);
+
 
     }
 }

@@ -20,14 +20,17 @@ import com.guanshi.contentcenter.sentineltest.TestControllerFallbackClass;
 import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.apache.commons.lang.StringUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -162,6 +165,17 @@ public class TestController {
             throw new IllegalArgumentException("a不能为空");
         }
         return a;
+    }
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @GetMapping("/test-rest-template-sentinel/{userId}")
+    public UserDTO test(@PathVariable Integer userId) {
+        return this.restTemplate
+                .getForObject(
+                        "http://user-center/users/{userId}",
+                        UserDTO.class, userId);
     }
 
 }

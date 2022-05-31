@@ -45,6 +45,8 @@ feign:
     enabled: true
     max-connections: 200
     max-connections-per-route: 50
+  sentinel:
+    enabled: true
 
 management:
   endpoints:
@@ -52,6 +54,9 @@ management:
       exposure:
         include: '*'
 
+#resttemplate:
+#  sentinel:
+#    enabled: false
 
 
 

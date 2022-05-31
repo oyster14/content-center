@@ -1,6 +1,7 @@
 package com.guanshi.contentcenter;
 
 
+import com.alibaba.cloud.sentinel.annotation.SentinelRestTemplate;
 import com.guanshi.contentcenter.configuration.GlobalFeignConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +24,7 @@ public class ContentCenterApplication {
 
     @Bean
     @LoadBalanced
+    @SentinelRestTemplate
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
