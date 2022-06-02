@@ -1,4 +1,4 @@
-package com.guanshi.contentcenter.dao.content;
+package com.guanshi.contentcenter.controller.content.dao.content;
 
 import com.guanshi.contentcenter.domain.entity.content.Share;
 import tk.mybatis.mapper.common.Mapper;

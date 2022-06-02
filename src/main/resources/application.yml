@@ -15,8 +15,14 @@ spring:
       transport:
         dashboard: localhost:8080
       filter:
-        enabled: false
-  #      web-context-unify: false
+        #打开对spring mvc端点的保护
+        enabled: true
+#      web-context-unify: false
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+
 
   application:
     name: content-center
@@ -54,12 +60,14 @@ management:
       exposure:
         include: '*'
 
+
 #resttemplate:
 #  sentinel:
 #    enabled: false
-
-
-
+#ahas:
+#  license: 324e4dd8d49d4f83ad08e54d095e73f2
+#  namespace: default
+#project.name: content-center
 
 
 

@@ -17,7 +17,15 @@ public class UserCenterFeignClientFallbackFactory
             public UserDTO findById(Integer id) {
                 log.warn("远程调用限流或者被降级了", throwable);
                 UserDTO userDTO = new UserDTO();
-                userDTO.setWxNickname("咚咚咚");
+                userDTO.setWxNickname("流控或者降级返回的用户");
+                return userDTO;
+            }
+
+            @Override
+            public UserDTO addBonus(Integer id, Integer bonus) {
+                log.warn("远程调用限流或者被降级了", throwable);
+                UserDTO userDTO = new UserDTO();
+                userDTO.setWxNickname("流控或者降级返回的用户");
                 return userDTO;
             }
         };

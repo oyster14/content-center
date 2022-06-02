@@ -17,6 +17,5 @@ public class ShareAdminController {
         //TODO 认证、授权
         return this.shareService.auditById(id, auditDTO);
 
-
     }
 }
