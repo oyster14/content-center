@@ -1,7 +1,7 @@
 package com.guanshi.contentcenter.service.content;
 
-import com.guanshi.contentcenter.controller.content.dao.content.ShareMapper;
-import com.guanshi.contentcenter.controller.content.dao.rocketmq_transaction_log.RocketmqTransactionLogMapper;
+import com.guanshi.contentcenter.dao.content.ShareMapper;
+import com.guanshi.contentcenter.dao.rocketmq_transaction_log.RocketmqTransactionLogMapper;
 import com.guanshi.contentcenter.domain.dto.content.ShareAuditDTO;
 import com.guanshi.contentcenter.domain.dto.content.ShareDTO;
 import com.guanshi.contentcenter.domain.dto.messaging.UserAddBonusMsgDTO;
@@ -40,7 +40,7 @@ public class ShareService {
         Share share = this.shareMapper.selectByPrimaryKey(id);
         Integer userId = share.getUserId();
 
-//        // get all info of all instances of user-center
+//        //get all info of all instances of user-center
 //        List<ServiceInstance> instances = discoveryClient.getInstances("user-center");
 //        List<String> targetURLS = instances.stream()
 //                .map(instance -> instance.getUri().toString() + "/users/{id}")
@@ -67,6 +67,8 @@ public class ShareService {
     }
 
     public Share auditById(Integer id, ShareAuditDTO auditDTO) {
+
+
 //        1. 查询share是否存在，不存在或者当前状态!=NOT_YET 抛异常
         Share share = this.shareMapper.selectByPrimaryKey(id);
         if (share == null) {
@@ -75,7 +77,21 @@ public class ShareService {
         if (!Objects.equals("NOT_YET", share.getAuditStatus())) {
             throw new IllegalArgumentException("参数非法，这个分享已经审核通过或者审核不通过");
         }
-
+////        2. 审核资源，将状态设置为PASS/REJECT
+//        share.setAuditStatus(auditDTO.getAuditStatusEnum().toString());
+//        this.shareMapper.updateByPrimaryKeySelective(share);
+////        3.0 如果是PASS添加积分
+////        3.1 如果是PASS，发送消息给rocketmq，让用户中心消费，并添加积分
+////        同步执行
+////      UserDTO userDTO = this.userCenterFeignClient.addBonus(id, 500);
+//        this.rocketMQTemplate.convertAndSend(
+//                "add-bonus",
+//                UserAddBonusMsgDTO.builder()
+//                .userId(share.getUserId())
+//                .bonus(50)
+//                .build()
+//        );
+//
         if (AuditStatusEnum.PASS.equals(auditDTO.getAuditStatusEnum())) {
 //                  发送半消息
             String transactionId = UUID.randomUUID().toString();
@@ -90,27 +106,15 @@ public class ShareService {
                                     .bonus(50)
                                     .build()
                             )
-                            .setHeaders(RocketMQHeaders.TRANSACTION_ID, transactionId)
-                            .setHeaders("share_id", id)
+                            .setHeader(RocketMQHeaders.TRANSACTION_ID, transactionId)
+                            .setHeader("share_id", id)
                             .build(),
                     auditDTO
             );
         }
         else {
-            this.auditById(id, auditDTO);
+            this.auditByIdInDB(id, auditDTO);
         }
-//        2. 审核资源，将状态设置为PASS/REJECT
-//        3.0 如果是PASS添加积分
-//        同步执行
-//        UserDTO userDTO = this.userCenterFeignClient.addBonus(id, 500);
-//        3.1 如果是PASS，发送消息给rocketmq，让用户中心消费，并添加积分
-//        this.rocketMQTemplate.convertAndSend(
-//                "add-bonus",
-//                UserAddBonusMsgDTO.builder()
-//                .userId(share.getUserId())
-//                .bonus(50)
-//                .build()
-//        );
         return share;
     }
 
@@ -126,13 +130,13 @@ public class ShareService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void auditByIdInWithRocketMQLog(Integer id, ShareAuditDTO auditDTO, String transactionId) {
-        this.auditById(id, auditDTO);
+    public void auditByIdWithRocketMQLog(Integer id, ShareAuditDTO auditDTO, String transactionId) {
+        this.auditByIdInDB(id, auditDTO);
 
         this.rocketmqTransactionLogMapper.insertSelective(
                 RocketmqTransactionLog.builder()
                         .transactionId(transactionId)
-                        .log("审核分享")
+                        .log("审核分享。。。。。")
                         .build()
         );
     }

@@ -1,10 +1,11 @@
 package com.guanshi.contentcenter.rocketmq;
 
-import com.guanshi.contentcenter.controller.content.dao.rocketmq_transaction_log.RocketmqTransactionLogMapper;
+import com.guanshi.contentcenter.dao.rocketmq_transaction_log.RocketmqTransactionLogMapper;
 import com.guanshi.contentcenter.domain.dto.content.ShareAuditDTO;
 import com.guanshi.contentcenter.domain.entity.rocketmq_transaction_log.RocketmqTransactionLog;
 import com.guanshi.contentcenter.service.content.ShareService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.spring.annotation.RocketMQTransactionListener;
 import org.apache.rocketmq.spring.core.RocketMQLocalTransactionListener;
 import org.apache.rocketmq.spring.core.RocketMQLocalTransactionState;
@@ -17,6 +18,7 @@ import java.util.Objects;
 
 @RocketMQTransactionListener(txProducerGroup = "tx-add-bonus-group")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class AddBonusTransactionListener implements RocketMQLocalTransactionListener {
     private final ShareService shareService;
 
@@ -29,7 +31,7 @@ public class AddBonusTransactionListener implements RocketMQLocalTransactionList
         Integer shareId = Integer.valueOf((String) Objects.requireNonNull(headers.get("share_id")));
 
         try {
-            this.shareService.auditByIdInWithRocketMQLog(shareId, (ShareAuditDTO) o, transactionId);
+            this.shareService.auditByIdWithRocketMQLog(shareId, (ShareAuditDTO) o, transactionId);
             return RocketMQLocalTransactionState.COMMIT;
         } catch (Exception e) {
             return RocketMQLocalTransactionState.ROLLBACK;
@@ -39,6 +41,8 @@ public class AddBonusTransactionListener implements RocketMQLocalTransactionList
     @Override
     public RocketMQLocalTransactionState checkLocalTransaction(Message message) {
         MessageHeaders headers = message.getHeaders();
+
+        log.info("出现了............");
 
         String transactionId = (String)headers.get(RocketMQHeaders.TRANSACTION_ID);
 

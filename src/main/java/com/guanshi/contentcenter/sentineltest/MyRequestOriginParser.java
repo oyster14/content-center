@@ -1,6 +1,6 @@
 package com.guanshi.contentcenter.sentineltest;
 
-import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.RequestOriginParser;
+import com.alibaba.csp.sentinel.adapter.servlet.callback.RequestOriginParser;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 

@@ -9,7 +9,7 @@ import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.alibaba.csp.sentinel.slots.block.RuleConstant;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRule;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowRuleManager;
-import com.guanshi.contentcenter.controller.content.dao.content.ShareMapper;
+import com.guanshi.contentcenter.dao.content.ShareMapper;
 import com.guanshi.contentcenter.domain.dto.user.UserDTO;
 import com.guanshi.contentcenter.domain.entity.content.Share;
 
@@ -17,6 +17,7 @@ import com.guanshi.contentcenter.feignclient.TestBaiduFeignClient;
 import com.guanshi.contentcenter.feignclient.TestUserCenterFeignClient;
 import com.guanshi.contentcenter.sentineltest.TestControllerBlockerHandlerClass;
 import com.guanshi.contentcenter.sentineltest.TestControllerFallbackClass;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

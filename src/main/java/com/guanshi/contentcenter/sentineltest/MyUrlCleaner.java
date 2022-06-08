@@ -1,6 +1,7 @@
 package com.guanshi.contentcenter.sentineltest;
 
-import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.UrlCleaner;
+
+import com.alibaba.csp.sentinel.adapter.servlet.callback.UrlCleaner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
