@@ -1,5 +1,6 @@
 package com.guanshi.contentcenter.service.content;
 
+import com.alibaba.fastjson.JSON;
 import com.guanshi.contentcenter.dao.content.ShareMapper;
 import com.guanshi.contentcenter.dao.rocketmq_transaction_log.RocketmqTransactionLogMapper;
 import com.guanshi.contentcenter.domain.dto.content.ShareAuditDTO;
@@ -16,6 +17,7 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.apache.rocketmq.spring.support.RocketMQHeaders;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,8 @@ public class ShareService {
     private final RocketMQTemplate rocketMQTemplate;
 
     private final RocketmqTransactionLogMapper rocketmqTransactionLogMapper;
+
+    private final Source source;
 
     public ShareDTO findById(Integer id) {
         Share share = this.shareMapper.selectByPrimaryKey(id);
@@ -96,10 +100,8 @@ public class ShareService {
 //                  发送半消息
             String transactionId = UUID.randomUUID().toString();
 
-            this.rocketMQTemplate.sendMessageInTransaction(
-                    "tx-add-bonus-group",
-                    "add-bonus",
-                    MessageBuilder
+            this.source.output()
+                    .send(MessageBuilder
                             .withPayload(
                                     UserAddBonusMsgDTO.builder()
                                     .userId(share.getUserId())
@@ -108,9 +110,25 @@ public class ShareService {
                             )
                             .setHeader(RocketMQHeaders.TRANSACTION_ID, transactionId)
                             .setHeader("share_id", id)
-                            .build(),
-                    auditDTO
-            );
+                            .setHeader("dto", JSON.toJSONString(auditDTO))
+                            .build()
+                    );
+
+//            this.rocketMQTemplate.sendMessageInTransaction(
+//                    "tx-add-bonus-group",
+//                    "add-bonus",
+//                    MessageBuilder
+//                            .withPayload(
+//                                    UserAddBonusMsgDTO.builder()
+//                                    .userId(share.getUserId())
+//                                    .bonus(50)
+//                                    .build()
+//                            )
+//                            .setHeader(RocketMQHeaders.TRANSACTION_ID, transactionId)
+//                            .setHeader("share_id", id)
+//                            .build(),
+//                    auditDTO
+//            );
         }
         else {
             this.auditByIdInDB(id, auditDTO);

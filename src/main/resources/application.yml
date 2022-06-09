@@ -18,10 +18,20 @@ spring:
         #打开对spring mvc端点的保护
         enabled: true
 #      web-context-unify: false
-#    stream:
-#      rocketmq:
-#        binder:
-#          name-server: localhost:9876
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+        bindings:
+          output:
+            producer:
+              transactional: true
+              group: tx-add-bonus-group
+      bindings:
+        output:
+          destination: add-bonus
+#        my-output:
+#          destination: stream-my-topic
   application:
     name: content-center
   main:
@@ -39,6 +49,7 @@ ribbon:
 logging:
   level:
     com.guanshi.contentcenter.feignclient.UserCenterFeignClient: debug
+    com.alibaba.nacos: error
 
 feign:
 #  sentinel:
@@ -62,23 +73,20 @@ management:
   endpoint:
     health:
       show-details: always
+
 resttemplate:
   sentinel:
     # 设置成false，表示关闭@SentinelRestTemplate注解
     enabled: true
 
-
-#resttemplate:
-#  sentinel:
-#    enabled: false
 #ahas:
 #  license: 324e4dd8d49d4f83ad08e54d095e73f2
 #  namespace: default
 #project.name: content-center
-rocketmq:
-  name-server: localhost:9876
-  producer:
-    group: test-group
+#rocketmq:
+#  name-server: localhost:9876
+#  producer:
+#    group: test-group
 
 
 
