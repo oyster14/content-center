@@ -79,6 +79,11 @@ resttemplate:
     # 设置成false，表示关闭@SentinelRestTemplate注解
     enabled: true
 
+jwt:
+  secret: aksdbkasdhglashdlghfalsdhflahdls
+  # 有效期，单位秒，默认2周
+  expire-time-in-second: 1209600
+
 #ahas:
 #  license: 324e4dd8d49d4f83ad08e54d095e73f2
 #  namespace: default
