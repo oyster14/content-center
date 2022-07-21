@@ -57,7 +57,9 @@ feign:
   client:
     config:
       default:
-        logger-level: BASIC
+        logger-level: FULL
+        request-interceptors:
+          - com.guanshi.contentcenter.feignclient.interceptor.TokenRelayRequestInterceptor
   httpclient:
     enabled: true
     max-connections: 200

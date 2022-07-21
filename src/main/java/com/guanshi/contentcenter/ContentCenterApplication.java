@@ -14,6 +14,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 import tk.mybatis.spring.annotation.MapperScan;
 
+import java.util.Collections;
+
+
 @MapperScan(basePackages = "com.guanshi.contentcenter.dao")
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -29,7 +32,14 @@ public class ContentCenterApplication {
     @LoadBalanced
     @SentinelRestTemplate
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setInterceptors(
+                Collections.singletonList(
+                        new TestRestTemplateTokenRelayInterceptor()
+                )
+        );
+        return restTemplate;
     }
 
 }

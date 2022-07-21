@@ -1,5 +1,6 @@
 package com.guanshi.contentcenter.controller.content;
 
+import com.guanshi.contentcenter.auth.CheckAuthorization;
 import com.guanshi.contentcenter.domain.dto.content.ShareAuditDTO;
 import com.guanshi.contentcenter.domain.entity.content.Share;
 import com.guanshi.contentcenter.service.content.ShareService;
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 public class ShareAdminController {
     private final ShareService shareService;
     @PutMapping("/audit/{id}")
+    @CheckAuthorization("admin")
     public Share auditById(@PathVariable Integer id, @RequestBody ShareAuditDTO auditDTO) {
-        //TODO 认证、授权
-        return this.shareService.auditById(id, auditDTO);
 
+        return this.shareService.auditById(id, auditDTO);
     }
 }
