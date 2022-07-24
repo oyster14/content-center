@@ -1,5 +1,6 @@
 package com.guanshi.contentcenter.feignclient.fallbackfactory;
 
+import com.guanshi.contentcenter.domain.dto.user.UserAddBonusDTO;
 import com.guanshi.contentcenter.domain.dto.user.UserDTO;
 import com.guanshi.contentcenter.feignclient.UserCenterFeignClient;
 import feign.hystrix.FallbackFactory;
@@ -22,12 +23,13 @@ public class UserCenterFeignClientFallbackFactory
             }
 
             @Override
-            public UserDTO addBonus(Integer id, Integer bonus) {
+            public UserDTO addBonus(UserAddBonusDTO userAddBonusDTO) {
                 log.warn("远程调用限流或者被降级了", throwable);
-                UserDTO userDTO = new UserDTO();
-                userDTO.setWxNickname("流控或者降级返回的用户");
-                return userDTO;
+//                UserDTO userDTO = new UserDTO();
+//                userDTO.setWxNickname("流控或者降级返回的用户");
+                return null;
             }
+
         };
     }
 }

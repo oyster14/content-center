@@ -56,6 +56,7 @@ ribbon:
 logging:
   level:
     com.guanshi.contentcenter.feignclient.UserCenterFeignClient: debug
+    com.guanshi.contentcenter.dao.content.ShareMapper: debug
     com.alibaba.nacos: error
 
 feign:
@@ -101,7 +102,9 @@ jwt:
 #  name-server: localhost:9876
 #  producer:
 #    group: test-group
-
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
 
 
 

@@ -1,13 +1,18 @@
 package com.guanshi.contentcenter.service.content;
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.guanshi.contentcenter.dao.content.ShareMapper;
+import com.guanshi.contentcenter.dao.mid_user_share.MidUserShareMapper;
 import com.guanshi.contentcenter.dao.rocketmq_transaction_log.RocketmqTransactionLogMapper;
 import com.guanshi.contentcenter.domain.dto.content.ShareAuditDTO;
 import com.guanshi.contentcenter.domain.dto.content.ShareDTO;
 import com.guanshi.contentcenter.domain.dto.messaging.UserAddBonusMsgDTO;
+import com.guanshi.contentcenter.domain.dto.user.UserAddBonusDTO;
 import com.guanshi.contentcenter.domain.dto.user.UserDTO;
 import com.guanshi.contentcenter.domain.entity.content.Share;
+import com.guanshi.contentcenter.domain.entity.mid_user_share.MidUserShare;
 import com.guanshi.contentcenter.domain.entity.rocketmq_transaction_log.RocketmqTransactionLog;
 import com.guanshi.contentcenter.domain.enums.AuditStatusEnum;
 import com.guanshi.contentcenter.feignclient.UserCenterFeignClient;
@@ -22,8 +27,12 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -39,6 +48,8 @@ public class ShareService {
     private final RocketmqTransactionLogMapper rocketmqTransactionLogMapper;
 
     private final Source source;
+
+    private final MidUserShareMapper midUserShareMapper;
 
     public ShareDTO findById(Integer id) {
         Share share = this.shareMapper.selectByPrimaryKey(id);
@@ -157,5 +168,77 @@ public class ShareService {
                         .log("审核分享。。。。。")
                         .build()
         );
+    }
+
+    public PageInfo<Share> q(String title, Integer pageNo, Integer pageSize, Integer userId) {
+
+        PageHelper.startPage(pageNo, pageSize);
+        List<Share> shares = this.shareMapper.selectByParam(title);
+        List<Share> dealtShares = new ArrayList<>();
+//        如果用户未登录，那么downloadURL都为null
+        if (userId == null) {
+            dealtShares = shares.stream().peek(share -> {
+                share.setDownloadUrl(null);
+            }).collect(Collectors.toList());
+        }
+//        如果登陆了，显示mid_user_share有的
+        else {
+            dealtShares = shares.stream().peek(share -> {
+                MidUserShare midUserShare = this.midUserShareMapper.selectOne(
+                        MidUserShare.builder()
+                                .userId(userId)
+                                .shareId(share.getId())
+                                .build()
+                );
+                if (midUserShare == null) {
+                    share.setDownloadUrl(null);
+                }
+            }).collect(Collectors.toList());
+        }
+
+        return new PageInfo<>(dealtShares);
+    }
+
+    public Share exchangeById(Integer id, HttpServletRequest request) {
+//        根据id查询业务，校验是否存在
+        Share share = this.shareMapper.selectByPrimaryKey(id);
+        Integer price = share.getPrice();
+        Object userId = request.getAttribute("id");
+        Integer integerUserId = (Integer) userId;
+        if (share == null) {
+            throw new IllegalArgumentException("该分享不存在！");
+        }
+
+//        如果兑换过该分享，直接返回
+        MidUserShare midUserShare = this.midUserShareMapper.selectOne(
+                MidUserShare.builder()
+                        .userId(integerUserId)
+                        .shareId(id)
+                        .build()
+        );
+        if (midUserShare != null) {
+            return share;
+        }
+
+//        根据当前id查询积分是不是够
+        UserDTO userDTO = this.userCenterFeignClient.findById(integerUserId);
+
+        if (price > userDTO.getBonus()) {
+            throw new IllegalArgumentException("用户积分不够用");
+        }
+//        扣减积分，并且向mid_user_share插入数据
+        this.userCenterFeignClient.addBonus(
+                UserAddBonusDTO.builder()
+                        .userId(integerUserId)
+                        .bonus(-price)
+                        .build()
+        );
+        this.midUserShareMapper.insert(
+                MidUserShare.builder()
+                        .userId(integerUserId)
+                        .shareId(id)
+                        .build()
+        );
+        return share;
     }
 }

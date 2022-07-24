@@ -1,5 +1,6 @@
 package com.guanshi.contentcenter.feignclient.fallback;
 
+import com.guanshi.contentcenter.domain.dto.user.UserAddBonusDTO;
 import com.guanshi.contentcenter.domain.dto.user.UserDTO;
 import com.guanshi.contentcenter.feignclient.UserCenterFeignClient;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,10 @@ public class UserCenterFeignClientFallback implements UserCenterFeignClient {
         return userDTO;
     }
 
-    public UserDTO addBonus(Integer id, Integer bonus) {
-        UserDTO userDTO = new UserDTO();
-        userDTO.setWxNickname("流控或者降级返回的用户");
-        return userDTO;
+    @Override
+    public UserDTO addBonus(UserAddBonusDTO userAddBonusDTO) {
+//        UserDTO userDTO = new UserDTO();
+//        userDTO.setWxNickname("流控或者降级返回的用户");
+        return null;
     }
-
 }
