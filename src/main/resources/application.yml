@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/content_center?serverTimezone=GMT%2B8
+    url: 
     hikari:
-      username: root
-      password: root
+      username: 
+      password: 
       driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     nacos:
@@ -90,12 +90,11 @@ resttemplate:
     enabled: true
 
 jwt:
-  secret: aksdbkasdhglashdlghfalsdhflahdls
-  # 有效期，单位秒，默认2周
+  secret: 
   expire-time-in-second: 1209600
 
 #ahas:
-#  license: 324e4dd8d49d4f83ad08e54d095e73f2
+#  license: 
 #  namespace: default
 #project.name: content-center
 #rocketmq:
